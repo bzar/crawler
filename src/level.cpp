@@ -1,6 +1,8 @@
 #include "ew/integration/sdlrendercontext.h"
 #include "gameworld.h"
 #include "level.h"
+#include "bouncyenemy.h"
+#include "exploryenemy.h"
 
 void Level::init()
 {
@@ -20,18 +22,18 @@ Level::Level(GameWorld* world) :
   char TEST_LEVEL[15][26] = {
     "#########################",
     "#....#..................#",
-    "#....#.........########.#",
+    "#....#...e.....########.#",
     "#....#................#.#",
-    "##.###.####....#......#.#",
+    "##.###.####....#..b...#.#",
     "#......#..#....#......#.#",
     "#...####..#....##.#####.#",
     "#...#.....#.............#",
-    "#.###...................#",
-    "#.#.#..........##.#####.#",
+    "#.###.......e...........#",
+    "#.#.#..b.......##.#####.#",
     "#.........#....#......#.#",
     "#.#.#.....#....#......#.#",
     "#.#########....####.###.#",
-    "#.......................#",
+    "#......e.........b......#",
     "#########################"
   };
 
@@ -40,8 +42,18 @@ Level::Level(GameWorld* world) :
     for(int x = 0; x < 25; ++x)
     {
       tiles.push_back({x * TILE_SIZE, y * TILE_SIZE, TEST_LEVEL[y][x] == '#' ? true : false});
+
+      if(TEST_LEVEL[y][x] == 'b')
+      {
+        new BouncyEnemy(world, {(x + 0.5f) * TILE_SIZE, (y + 0.5f) * TILE_SIZE}, {170, 150});
+      }
+      else if(TEST_LEVEL[y][x] == 'e')
+      {
+        new ExploryEnemy(world, {(x + 0.5f) * TILE_SIZE, (y + 0.5f) * TILE_SIZE});
+      }
     }
   }
+
 }
 
 Level::~Level()

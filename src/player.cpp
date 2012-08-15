@@ -1,6 +1,5 @@
 #include "player.h"
 #include "ew/integration/sdlrendercontext.h"
-#include <iostream>
 
 ew::UID const Player::ID = ew::getUID();
 
@@ -76,12 +75,22 @@ void Player::moveVertically(float const delta)
   position.y += velocity.y * delta;
 }
 
-void Player::setTileX(float const x)
+void Player::tileCollisionTop(float const y)
+{
+  position.y = y + 8;
+}
+
+void Player::tileCollisionBottom(float const y)
+{
+  position.y = y - 8;
+}
+
+void Player::tileCollisionLeft(float const x)
 {
   position.x = x + 8;
 }
 
-void Player::setTileY(float const y)
+void Player::tileCollisionRight(float const x)
 {
-  position.y = y + 8;
+  position.x = x - 8;
 }
