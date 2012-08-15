@@ -18,6 +18,7 @@ int main(int argc, char** argv)
 {
   SDL_Init( SDL_INIT_EVERYTHING );
   SDL_Surface* screen = SDL_SetVideoMode( WIDTH, HEIGHT, 24, SDL_SWSURFACE );
+  SDL_WM_SetCaption("Crawler", nullptr);
 
   int retval = gameloop(screen);
 
