@@ -1,0 +1,3 @@
+[submodule "lib/engineworks"]
+	path = lib/engineworks
+	url = git://github.com/bzar/engineworks.git
