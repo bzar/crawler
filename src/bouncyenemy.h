@@ -2,28 +2,23 @@
 #define BOUNCYENEMY_HH
 
 #include "gameworld.h"
-#include "ew/renderable.h"
-#include "ew/updatable.h"
-#include "ew/collidable.h"
+#include "enemy.h"
 #include "ew/tilecollidable.h"
 
 #include "util/vec2d.h"
+#include "util/rectshape.h"
 
-class BouncyEnemy : public ew::Renderable, public ew::Updatable, public ew::Collidable, public ew::TileCollidable
+class BouncyEnemy : public Enemy, public ew::TileCollidable
 {
 public:
   static void init();
   static void term();
 
-  BouncyEnemy(GameWorld* world, Vec2D const& position, Vec2D const& velocity);
+  BouncyEnemy(GameWorld* world, Vec2D const& position, Vec2D const& velocity = Vec2D(0, 0));
   ~BouncyEnemy();
-
-  static ew::UID const ID;
-  ew::UID getEntityId() const { return ID; }
 
   void render(ew::RenderContext* context);
   void update(float const delta);
-  void collide(ew::Collidable const* other);
 
   ew::TileCollidableWorld::TileCollideRect getTileCollideRect();
   void moveHorizontally(float const delta);
@@ -33,8 +28,9 @@ public:
   void tileCollisionLeft(float const x);
   void tileCollisionRight(float const x);
 
+  virtual RectShape const* getShape() const;
+
 private:
-  Vec2D position;
-  Vec2D velocity;
+  RectShape shape;
 };
 #endif

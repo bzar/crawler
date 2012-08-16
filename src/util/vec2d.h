@@ -43,6 +43,8 @@ public:
   Vec2D& operator-=(Vec2D const& other);
   Vec2D& operator*=(float const& scalar);
   Vec2D& operator=(Vec2D const& other);
+  bool operator==(Vec2D const& other);
+  bool operator!=(Vec2D const& other);
 
   float x;
   float y;

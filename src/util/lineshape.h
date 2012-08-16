@@ -10,6 +10,7 @@ public:
   LineShape(Vec2D const& p1, Vec2D const& p2, float const radius);
   virtual bool collidesWith(CircleShape const* circle) const;
   virtual bool collidesWith(LineShape const* line) const;
+  virtual bool collidesWith(RectShape const* rect) const;
 
   Vec2D p1;
   Vec2D p2;

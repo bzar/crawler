@@ -2,15 +2,12 @@
 #include "ew/integration/sdlrendercontext.h"
 #include "util/util.h"
 
-ew::UID const ExploryEnemy::ID = ew::getUID();
-
 void ExploryEnemy::init() {}
 void ExploryEnemy::term() {}
 
 ExploryEnemy::ExploryEnemy(GameWorld* world, Vec2D const& position) :
-  Entity(world), Renderable(world), Updatable(world),
-  Collidable(world), TileCollidable(world),
-  position(position), velocity()
+  Entity(world), Enemy(world, position, {0, 0}, 3), TileCollidable(world),
+  shape(position, 16, 16)
 {
 
 }
@@ -33,22 +30,24 @@ void ExploryEnemy::render(ew::RenderContext* context)
 
 void ExploryEnemy::update(float const delta)
 {
-  if(velocity.x == 0 && velocity.y == 0)
+  shape.center = position;
+
+  if(!stunned() && !knockedBack())
   {
-    if(randInt(0, 200) == 0)
+    if(velocity.x == 0 && velocity.y == 0)
     {
-      velocity = {randFloat(-50, 50), randFloat(-50, 50)};
+      if(randInt(0, 200) == 0)
+      {
+        velocity = {randFloat(-50, 50), randFloat(-50, 50)};
+      }
+    }
+    else if(randInt(0, 500) == 0)
+    {
+      velocity = {0, 0};
     }
   }
-  else if(randInt(0, 500) == 0)
-  {
-    velocity = {0, 0};
-  }
-}
 
-void ExploryEnemy::collide(ew::Collidable const* other)
-{
-
+  Enemy::update(delta);
 }
 
 ew::TileCollidableWorld::TileCollideRect ExploryEnemy::getTileCollideRect()
@@ -116,4 +115,9 @@ void ExploryEnemy::tileCollisionRight(float const x)
   {
     velocity = {0, 0};
   }
+}
+
+RectShape const* ExploryEnemy::getShape() const
+{
+  return &shape;
 }

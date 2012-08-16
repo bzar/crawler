@@ -202,3 +202,13 @@ Vec2D& Vec2D::operator=(Vec2D const& other)
 {
   return assign(other);
 }
+
+bool Vec2D::operator==(Vec2D const& other)
+{
+  return x == other.x && y == other.y;
+}
+
+bool Vec2D::operator!=(Vec2D const& other)
+{
+  return x != other.x || y != other.y;
+}

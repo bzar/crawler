@@ -45,7 +45,7 @@ Level::Level(GameWorld* world) :
 
       if(TEST_LEVEL[y][x] == 'b')
       {
-        new BouncyEnemy(world, {(x + 0.5f) * TILE_SIZE, (y + 0.5f) * TILE_SIZE}, {170, 150});
+        new BouncyEnemy(world, {(x + 0.5f) * TILE_SIZE, (y + 0.5f) * TILE_SIZE});
       }
       else if(TEST_LEVEL[y][x] == 'e')
       {
@@ -63,9 +63,9 @@ Level::~Level()
 
 void Level::render(ew::RenderContext* context)
 {
+  SDLRenderContext* ctx = static_cast<SDLRenderContext*>(context);
   for(Tile& tile : tiles)
   {
-    SDLRenderContext* ctx = static_cast<SDLRenderContext*>(context);
     Sint16 x = tile.x;
     Sint16 y = tile.y;
     SDL_Rect rect = {x, y, TILE_SIZE, TILE_SIZE};

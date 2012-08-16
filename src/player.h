@@ -9,6 +9,9 @@
 #include "ew/tilecollidable.h"
 
 #include "util/vec2d.h"
+#include "sword.h"
+
+#include "util/rectshape.h"
 
 class Player : public ew::Renderable, public ew::Updatable, public ew::Collidable, public ew::Controllable, public ew::TileCollidable
 {
@@ -35,8 +38,20 @@ public:
   void tileCollisionLeft(float const x);
   void tileCollisionRight(float const x);
 
+  Vec2D getPosition() const;
+  Vec2D getFacing() const;
+  RectShape const* getShape() const;
+
+  bool knockedBack() const;
+
 private:
   Vec2D position;
   Vec2D velocity;
+  Vec2D facing;
+  RectShape shape;
+
+  Sword* sword;
+
+  float knockbackTimer;
 };
 #endif

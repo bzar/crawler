@@ -34,6 +34,29 @@ bool lineLineIntersect(Vec2D const& l11, Vec2D const& l12, float const l1r,
   throw std::runtime_error("Not implemented!");
 }
 
+bool rectsIntersect(Vec2D const& c1, float const w1, float const h1, Vec2D const& c2, float const w2, float const h2)
+{
+  if(c1.x - w1/2 > c2.x + w2/2)
+    return false;
+  if(c2.x - w2/2 > c1.x + w1/2)
+    return false;
+  if(c1.y - h1/2 > c2.y + h2/2)
+    return false;
+  if(c2.y - h2/2 > c1.y + h1/2)
+    return false;
+  return true;
+}
+
+bool circleRectIntersect(Vec2D const& p, float const r, Vec2D const& c, float const w, float const h)
+{
+  throw std::runtime_error("Not implemented!");
+}
+
+bool lineRectIntersect(Vec2D const& l1, Vec2D const& l2, float const lr, Vec2D const& c, float const w, float const h)
+{
+  throw std::runtime_error("Not implemented!");
+}
+
 Vec2D circleLineIntersectionPoint(Vec2D const& p, float const r, Vec2D const& l1, Vec2D const& l2, float const lr)
 {
   Vec2D l1q = (p - l1).projectioni(l2 - l1);

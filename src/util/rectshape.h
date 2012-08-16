@@ -1,18 +1,19 @@
-#ifndef CIRCLESHAPE_HH
-#define CIRCLESHAPE_HH
+#ifndef RECTSHAPE_HH
+#define RECTSHAPE_HH
 
 #include "shape.h"
 #include "vec2d.h"
 
-class CircleShape : public Shape
+class RectShape : public Shape
 {
 public:
-  CircleShape(Vec2D const& center, float const radius);
+  RectShape(Vec2D const& center, float const width, float const height);
   virtual bool collidesWith(CircleShape const* circle) const;
   virtual bool collidesWith(LineShape const* line) const;
   virtual bool collidesWith(RectShape const* rect) const;
 
   Vec2D center;
-  float radius;
+  float width;
+  float height;
 };
 #endif

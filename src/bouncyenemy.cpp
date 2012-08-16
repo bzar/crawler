@@ -1,15 +1,13 @@
 #include "bouncyenemy.h"
 #include "ew/integration/sdlrendercontext.h"
-
-ew::UID const BouncyEnemy::ID = ew::getUID();
+#include "util/util.h"
 
 void BouncyEnemy::init() {}
 void BouncyEnemy::term() {}
 
 BouncyEnemy::BouncyEnemy(GameWorld* world, Vec2D const& position, Vec2D const& velocity) :
-  Entity(world), Renderable(world), Updatable(world),
-  Collidable(world), TileCollidable(world),
-  position(position), velocity(velocity)
+  Entity(world), Enemy(world, position, velocity, 2), TileCollidable(world),
+  shape(position, 16, 16)
 {
 
 }
@@ -32,11 +30,13 @@ void BouncyEnemy::render(ew::RenderContext* context)
 
 void BouncyEnemy::update(float const delta)
 {
-}
-
-void BouncyEnemy::collide(ew::Collidable const* other)
-{
-
+  if(velocity == Vec2D(0, 0) && !stunned())
+  {
+    velocity = {0, 150};
+    velocity.rotatei(randFloat(0, 1));
+  }
+  shape.center = position;
+  Enemy::update(delta);
 }
 
 ew::TileCollidableWorld::TileCollideRect BouncyEnemy::getTileCollideRect()
@@ -76,4 +76,9 @@ void BouncyEnemy::tileCollisionRight(float const x)
 {
   velocity.x = -velocity.x;
   position.x = x - 8;
+}
+
+RectShape const* BouncyEnemy::getShape() const
+{
+  return &shape;
 }

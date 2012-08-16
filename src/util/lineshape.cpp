@@ -1,5 +1,6 @@
 #include "lineshape.h"
 #include "circleshape.h"
+#include "rectshape.h"
 #include "util.h"
 
 LineShape::LineShape(Vec2D const& p1, Vec2D const& p2, float const radius) :
@@ -14,4 +15,9 @@ bool LineShape::collidesWith(CircleShape const* circle) const
 bool LineShape::collidesWith(LineShape const* line) const
 {
   return lineLineIntersect(p1, p2, radius, line->p1, line->p2, line->radius);
+}
+
+bool LineShape::collidesWith(RectShape const* rect) const
+{
+  return lineRectIntersect(p1, p2, radius, rect->center, rect->width, rect->height);
 }
