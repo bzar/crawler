@@ -16,3 +16,5 @@ list(APPEND CMAKE_CXX_FLAGS -std=c++0x)
 add_executable(crawler ${SOURCES})
 
 target_link_libraries(crawler engineworks ${SDL_LIBRARY} ${SDLIMAGE_LIBRARY})
+
+file(COPY img DESTINATION .)
