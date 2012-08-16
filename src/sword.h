@@ -5,6 +5,7 @@
 #include "ew/renderable.h"
 #include "ew/updatable.h"
 #include "ew/collidable.h"
+#include "ew/integration/sdlrendercontext.h"
 
 #include "util/vec2d.h"
 #include "util/rectshape.h"
@@ -14,6 +15,8 @@ class Player;
 class Sword : public ew::Renderable, public ew::Updatable, public ew::Collidable
 {
 public:
+  static float const SLASH_DURATION;
+
   static void init();
   static void term();
 
@@ -35,10 +38,13 @@ public:
   Player* getPlayer() const;
 
 private:
-  static float const SLASH_DURATION;
+  static SDL_Surface* image;
+
   GameWorld* world;
   Player* player;
   float slashTime;
   RectShape shape;
+
+  float frameTimer;
 };
 #endif

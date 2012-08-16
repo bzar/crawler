@@ -7,6 +7,7 @@
 #include "ew/collidable.h"
 #include "ew/controllable.h"
 #include "ew/tilecollidable.h"
+#include "ew/integration/sdlrendercontext.h"
 
 #include "util/vec2d.h"
 #include "sword.h"
@@ -45,6 +46,8 @@ public:
   bool knockedBack() const;
 
 private:
+  static SDL_Surface* image;
+
   Vec2D position;
   Vec2D velocity;
   Vec2D facing;
@@ -53,5 +56,6 @@ private:
   Sword* sword;
 
   float knockbackTimer;
+  float frameTimer;
 };
 #endif

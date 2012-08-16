@@ -1,11 +1,19 @@
 #include "gamestate.h"
+#include "level.h"
+#include "player.h"
 
 void GameState::init()
 {
+  Level::init();
+  Player::init();
+  Sword::init();
 }
 
 void GameState::term()
 {
+  Level::term();
+  Player::term();
+  Sword::term();
 }
 
 GameState::GameState(ew::Engine* engine) :
