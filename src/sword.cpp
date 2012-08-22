@@ -2,14 +2,27 @@
 #include "player.h"
 #include "ew/integration/sdlrendercontext.h"
 #include "SDL/SDL_image.h"
+#include <fstream>
 
 ew::UID const Sword::ID = ew::getUID();
 float const Sword::SLASH_DURATION = 0.15;
+Sprite Sword::sprite = Sprite();
+int Sword::animationIds[NUM_ANIMATION_DIRECTIONS] = {-1};
 SDL_Surface* Sword::image = nullptr;
 
 void Sword::init()
 {
-  SDL_Surface* loadedImage = IMG_Load("img/sword.png");
+  std::ifstream f("sprite/sword.qmlon");
+  auto spriteDoc = qmlon::readValue(f);
+  SpriteSheet sheet = SpriteSheet::create(spriteDoc);
+  sprite = sheet.getSprite("sword");
+
+  animationIds[UP] = sprite.getAnimationId("slash-up");
+  animationIds[DOWN] = sprite.getAnimationId("slash-down");
+  animationIds[LEFT] = sprite.getAnimationId("slash-left");
+  animationIds[RIGHT] = sprite.getAnimationId("slash-right");
+
+  SDL_Surface* loadedImage = IMG_Load(sheet.getImage().data());
 
   if(loadedImage)
   {
@@ -27,7 +40,8 @@ void Sword::term()
 
 Sword::Sword(GameWorld* world, Player* player) :
   Entity(world), Renderable(world, 1), Updatable(world), Collidable(world),
-  world(world), player(player), slashTime(0), shape(getPosition(), 0, 0)
+  world(world), player(player), slashTime(0), shape(getPosition(), 0, 0),
+  frameTimer(0)
 {
 
 }
@@ -45,58 +59,48 @@ void Sword::render(ew::RenderContext* context)
   {
     SDLRenderContext* ctx = static_cast<SDLRenderContext*>(context);
 
-    /*Sint16 x = shape.center.x - shape.width/2;
-    Sint16 y = shape.center.y - shape.height/2;
-    Uint16 w = shape.width;
-    Uint16 h = shape.height;
-    SDL_Rect rect = {x, y, w, h};*/
-    //SDL_FillRect(ctx->getScreen(), &rect, SDL_MapRGB(ctx->getScreen()->format, 0x80, 0x00, 0x00));
+    AnimationDirection d = UP;
 
-    SDL_Rect rect = {32, 32, 32, 32};
-
-    Vec2D facing = player->getFacing();
-
-    Vec2D position = player->getPosition();
-    Sint16 dx = position.x;
-    Sint16 dy = position.y;
-
-    if(facing.y == 1)
+    if(player->getFacing().y == 1)
     {
-      dx -= 16;
-      dy -= 16;
-      rect.y *= 0;
+      d = DOWN;
     }
-    else if(facing.y == -1)
+    else if(player->getFacing().y == -1)
     {
-      dx -= 16;
-      dy -= 24;
-      rect.y *= 1;
+      d = UP;
     }
-    else if(facing.x == 1)
+    else if(player->getFacing().x == 1)
     {
-      dx -= 10;
-      dy -= 20;
-      rect.y *= 2;
+      d = RIGHT;
     }
-    else if(facing.x == -1)
+    else if(player->getFacing().x == -1)
     {
-      dx -= 20;
-      dy -= 20;
-      rect.y *= 3;
+      d = LEFT;
     }
 
-    rect.x *= static_cast<int>(3 * (1 - slashTime / SLASH_DURATION));
 
-    SDL_Rect offset = {dx, dy, 32, 32};
+    Frame const& f = sprite.getAnimation(animationIds[d]).getFrame(frameTimer);
+
+    Sint16 x = f.getPosition().x;
+    Sint16 y = f.getPosition().y;
+    Uint16 w = f.getSize().width;
+    Uint16 h = f.getSize().height;
+
+    SDL_Rect rect = {x, y, w, h};
+
+    Sint16 dx = player->getPosition().x - f.getHotspot().x;
+    Sint16 dy = player->getPosition().y - f.getHotspot().y;
+    SDL_Rect offset = {dx, dy, 0, 0};
 
     SDL_BlitSurface(image, &rect, ctx->getScreen(), &offset );
- }
+  }
 }
 
 void Sword::update(float const delta)
 {
   if(slashing())
   {
+    frameTimer += delta;
     slashTime -= delta;
     shape.center = player->getPosition() + player->getFacing().scale(8);
     if(player->getFacing().x != 0)
@@ -120,6 +124,7 @@ void Sword::collide(ew::Collidable const* other)
 
 void Sword::slash()
 {
+  frameTimer = 0;
   slashTime = SLASH_DURATION;
 }
 

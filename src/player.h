@@ -13,6 +13,7 @@
 #include "sword.h"
 
 #include "util/rectshape.h"
+#include "spritesheet.h"
 
 class Player : public ew::Renderable, public ew::Updatable, public ew::Collidable, public ew::Controllable, public ew::TileCollidable
 {
@@ -46,6 +47,11 @@ public:
   bool knockedBack() const;
 
 private:
+  enum AnimationType { STAND, WALK, SLASH, NUM_ANIMATION_TYPES };
+  enum AnimationDirection { UP, DOWN, LEFT, RIGHT, NUM_ANIMATION_DIRECTIONS };
+  static int animationIds[NUM_ANIMATION_TYPES][NUM_ANIMATION_DIRECTIONS];
+  static Sprite sprite;
+
   static SDL_Surface* image;
 
   Vec2D position;

@@ -2,13 +2,36 @@
 #include "enemy.h"
 
 #include "SDL/SDL_image.h"
+#include <fstream>
 
 ew::UID const Player::ID = ew::getUID();
+Sprite Player::sprite = Sprite();
+int Player::animationIds[NUM_ANIMATION_TYPES][NUM_ANIMATION_DIRECTIONS] = { {-1} };
 SDL_Surface* Player::image = nullptr;
 
 void Player::init()
 {
-  SDL_Surface* loadedImage = IMG_Load("img/player.png");
+  std::ifstream f("sprite/player.qmlon");
+  auto spriteDoc = qmlon::readValue(f);
+  SpriteSheet sheet = SpriteSheet::create(spriteDoc);
+  sprite = sheet.getSprite("player");
+
+  animationIds[STAND][UP] = sprite.getAnimationId("stand-up");
+  animationIds[STAND][DOWN] = sprite.getAnimationId("stand-down");
+  animationIds[STAND][LEFT] = sprite.getAnimationId("stand-left");
+  animationIds[STAND][RIGHT] = sprite.getAnimationId("stand-right");
+
+  animationIds[WALK][UP] = sprite.getAnimationId("walk-up");
+  animationIds[WALK][DOWN] = sprite.getAnimationId("walk-down");
+  animationIds[WALK][LEFT] = sprite.getAnimationId("walk-left");
+  animationIds[WALK][RIGHT] = sprite.getAnimationId("walk-right");
+
+  animationIds[SLASH][UP] = sprite.getAnimationId("slash-up");
+  animationIds[SLASH][DOWN] = sprite.getAnimationId("slash-down");
+  animationIds[SLASH][LEFT] = sprite.getAnimationId("slash-left");
+  animationIds[SLASH][RIGHT] = sprite.getAnimationId("slash-right");
+
+  SDL_Surface* loadedImage = IMG_Load(sheet.getImage().data());
 
   if(loadedImage)
   {
@@ -16,6 +39,7 @@ void Player::init()
     SDL_SetColorKey(image, SDL_SRCCOLORKEY | SDL_RLEACCEL, SDL_MapRGB(image->format, 0xFF, 0x00, 0xFF));
   }
   SDL_FreeSurface(loadedImage);
+
 }
 
 void Player::term()
@@ -41,50 +65,55 @@ Player::~Player()
 void Player::render(ew::RenderContext* context)
 {
   SDLRenderContext* ctx = static_cast<SDLRenderContext*>(context);
-  SDL_Rect rect = {16, 32, 16, 18};
+
+  AnimationDirection d = UP;
 
   if(facing.y == 1)
   {
-    rect.y *= 0;
+    d = DOWN;
   }
   else if(facing.y == -1)
   {
-    rect.y *= 1;
+    d = UP;
   }
   else if(facing.x == 1)
   {
-    rect.y *= 2;
+    d = RIGHT;
   }
   else if(facing.x == -1)
   {
-    rect.y *= 3;
+    d = LEFT;
   }
+
+  AnimationType t = STAND;
 
   if(sword->slashing())
   {
-    rect.x *= static_cast<int>(3 * frameTimer / Sword::SLASH_DURATION) + 3;
+    t = SLASH;
   }
   else if(velocity != Vec2D(0, 0))
   {
-    rect.x *= static_cast<int>(frameTimer * 15) % 3;
+    t = WALK;
   }
   else
   {
-    rect.x = 0;
+    t = STAND;
   }
 
-  Sint16 dx = position.x - 8;
-  Sint16 dy = position.y - 16;
+  Frame const& f = sprite.getAnimation(animationIds[t][d]).getFrame(frameTimer);
+
+  Sint16 x = f.getPosition().x;
+  Sint16 y = f.getPosition().y;
+  Uint16 w = f.getSize().width;
+  Uint16 h = f.getSize().height;
+
+  SDL_Rect rect = {x, y, w, h};
+
+  Sint16 dx = position.x - f.getHotspot().x;
+  Sint16 dy = position.y - f.getHotspot().y;
   SDL_Rect offset = {dx, dy, 0, 0};
 
   SDL_BlitSurface(image, &rect, ctx->getScreen(), &offset );
-  /*SDL_FillRect(ctx->getScreen(), &rect, SDL_MapRGB(ctx->getScreen()->format, 0xEF, 0x00, 0x00));
-
-  Vec2D facingPos = position + facing.scale(8);
-  Sint16 fx = facingPos.x - 2;
-  Sint16 fy = facingPos.y - 2;
-  SDL_Rect frect = {fx, fy, 4, 4};
-  SDL_FillRect(ctx->getScreen(), &frect, SDL_MapRGB(ctx->getScreen()->format, 0x00, 0x00, 0xEF));*/
 }
 
 void Player::update(float const delta)

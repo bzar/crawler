@@ -9,6 +9,7 @@
 
 #include "util/vec2d.h"
 #include "util/rectshape.h"
+#include "spritesheet.h"
 
 class Player;
 
@@ -38,6 +39,10 @@ public:
   Player* getPlayer() const;
 
 private:
+  enum AnimationDirection { UP, DOWN, LEFT, RIGHT, NUM_ANIMATION_DIRECTIONS };
+  static int animationIds[NUM_ANIMATION_DIRECTIONS];
+  static Sprite sprite;
+
   static SDL_Surface* image;
 
   GameWorld* world;
